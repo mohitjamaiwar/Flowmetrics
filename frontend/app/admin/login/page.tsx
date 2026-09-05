@@ -21,15 +21,14 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  async function performLogin(targetEmail: string, targetPass: string) {
     setError("");
     setLoading(true);
 
     try {
       const data = await apiRequest<LoginResponse>("/api/auth/login", {
         method: "POST",
-        body: { email, password },
+        body: { email: targetEmail, password: targetPass },
       });
       login(data.token, data.user);
 
@@ -49,6 +48,17 @@ export default function AdminLoginPage() {
     }
   }
 
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    await performLogin(email, password);
+  }
+
+  function handleDemoLogin(userEmail: string, userPass: string) {
+    setEmail(userEmail);
+    setPassword(userPass);
+    performLogin(userEmail, userPass);
+  }
+
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-panel bg-grid-pattern px-4 overflow-hidden text-white py-12">
       <HeroGradientOrbs />
@@ -56,12 +66,45 @@ export default function AdminLoginPage() {
 
       <div className="relative z-10 w-full max-w-md">
         {/* Header */}
-        <div className="mb-8 text-center">
+        <div className="mb-6 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-teal-light/30 bg-teal/10 px-3.5 py-1 text-xs font-semibold text-teal-light tracking-wide mb-3">
             FLOWMETRICS WORKSPACE PORTAL
           </div>
           <h1 className="font-display text-3xl font-extrabold tracking-tight">Sign In</h1>
           <p className="mt-2 text-sm text-white/70">Access Admin Console or Employee Progress Workspace</p>
+        </div>
+
+        {/* 1-Click Quick Demo Login Section */}
+        <div className="mb-6 rounded-2xl border border-linedark bg-panelmuted/80 p-4 backdrop-blur-md shadow-xl">
+          <p className="text-xs font-bold text-teal-light uppercase tracking-wider text-center mb-3 flex items-center justify-center gap-1.5">
+            ⚡ 1-Click Quick Demo Login
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => handleDemoLogin("admin@flowmetrics.dev", "ChangeMe123!")}
+              className="rounded-xl border border-teal/40 bg-teal/20 px-2 py-2.5 text-xs font-bold text-teal-light hover:bg-teal hover:text-white transition-all text-center shadow-sm"
+              title="Sign in as Flowmetrics Admin"
+            >
+              👑 Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDemoLogin("alex@flowmetrics.dev", "Employee123!")}
+              className="rounded-xl border border-blue/40 bg-blue/20 px-2 py-2.5 text-xs font-bold text-blue-light hover:bg-blue hover:text-white transition-all text-center shadow-sm"
+              title="Sign in as Alex (Frontend Dev)"
+            >
+              👩‍💻 Alex
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDemoLogin("priya@flowmetrics.dev", "Employee123!")}
+              className="rounded-xl border border-indigo-500/40 bg-indigo-500/20 px-2 py-2.5 text-xs font-bold text-indigo-300 hover:bg-indigo-600 hover:text-white transition-all text-center shadow-sm"
+              title="Sign in as Priya (Backend Dev)"
+            >
+              👨‍💻 Priya
+            </button>
+          </div>
         </div>
 
         {/* Center Form Card */}
